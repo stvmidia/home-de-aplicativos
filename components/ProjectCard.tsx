@@ -13,21 +13,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       <div className="absolute -inset-0.5 bg-gradient-to-r from-brand-500 to-accent-600 opacity-0 group-hover:opacity-20 transition duration-500 blur-xl"></div>
       
       {/* Image Area */}
-      <div className="relative h-48 overflow-hidden bg-slate-800">
+      <div className="relative h-48 overflow-hidden bg-slate-200 dark:bg-slate-800">
         <img 
           src={project.imageUrl || `https://picsum.photos/seed/${project.id}/800/600`} 
           alt={project.title}
           className="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-out"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-80"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-60 dark:opacity-80"></div>
         
         {/* Floating Tags */}
         <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
           {project.tags.map((tag, index) => (
             <span 
               key={index} 
-              className="px-2 py-1 text-[10px] uppercase tracking-wider font-bold bg-white/10 backdrop-blur-md border border-white/10 rounded-md text-white shadow-sm"
+              className="px-2 py-1 text-[10px] uppercase tracking-wider font-bold bg-white/20 backdrop-blur-md border border-white/20 rounded-md text-white shadow-sm"
             >
               {tag}
             </span>
@@ -37,11 +37,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
       {/* Content Area */}
       <div className="p-5 flex-1 flex flex-col relative z-10">
-        <h3 className="text-xl font-bold font-display text-white mb-2 group-hover:text-brand-300 transition-colors">
+        <h3 className="text-xl font-bold font-display text-slate-800 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
           {project.title}
         </h3>
         
-        <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
+        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
           {project.description}
         </p>
 

@@ -9,3 +9,4 @@ export interface Project {
 }
 
 export type ViewState = 'home' | 'admin';
+export type Theme = 'light' | 'dark';

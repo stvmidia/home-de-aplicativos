@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { ProjectCard } from './components/ProjectCard';
 import { AdminPanel } from './components/AdminPanel';
-import { Project, ViewState } from './types';
+import { Project, ViewState, Theme } from './types';
 import { Rocket, Sparkles } from 'lucide-react';
 
 const STORAGE_KEY = 'stanismar-apps-data';
+const THEME_KEY = 'stanismar-theme';
 
 // Default initial data if storage is empty
 const INITIAL_DATA: Project[] = [
@@ -42,13 +43,15 @@ function App() {
   const [view, setView] = useState<ViewState>('home');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState<Theme>('dark');
 
-  // Load data from localStorage on mount
+  // Load data and theme
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
+    // Load Projects
+    const savedProjects = localStorage.getItem(STORAGE_KEY);
+    if (savedProjects) {
       try {
-        setProjects(JSON.parse(saved));
+        setProjects(JSON.parse(savedProjects));
       } catch (e) {
         console.error("Failed to parse saved projects", e);
         setProjects(INITIAL_DATA);
@@ -56,15 +59,36 @@ function App() {
     } else {
       setProjects(INITIAL_DATA);
     }
+
+    // Load Theme
+    const savedTheme = localStorage.getItem(THEME_KEY) as Theme;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+
     setLoading(false);
   }, []);
 
-  // Save to localStorage whenever projects change
+  // Save projects
   useEffect(() => {
     if (!loading) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
     }
   }, [projects, loading]);
+
+  // Apply Theme
+  useEffect(() => {
+    localStorage.setItem(THEME_KEY, theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   const handleAddProject = (project: Project) => {
     setProjects(prev => [project, ...prev]);
@@ -77,12 +101,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-brand-500/30 selection:text-brand-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans selection:bg-brand-500/30 selection:text-brand-700 dark:selection:text-brand-200 transition-colors duration-300">
       
       {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand-600/10 blur-[120px] animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent-600/10 blur-[120px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand-400/20 dark:bg-brand-600/10 blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent-400/20 dark:bg-accent-600/10 blur-[120px] animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
       </div>
 
       <Header currentView={view} onNavigate={setView} />
@@ -93,13 +117,13 @@ function App() {
           <div className="animate-fade-in">
             {/* Hero Section */}
             <div className="text-center mb-16 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-semibold uppercase tracking-widest mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-500/10 border border-brand-200 dark:border-brand-500/20 text-brand-700 dark:text-brand-300 text-xs font-semibold uppercase tracking-widest mb-4 shadow-sm dark:shadow-none">
                 <Sparkles className="w-3 h-3" /> Portfolio de IA
               </div>
-              <h2 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tight">
-                Hub de Inovação <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-500">Stanismar</span>
+              <h2 className="text-4xl md:text-6xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+                Hub de Inovação <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-500">Stanismar</span>
               </h2>
-              <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
                 Explore uma coleção curada de aplicações inteligentes e experimentos criativos desenvolvidos com a tecnologia Google AI Studio.
               </p>
             </div>
@@ -113,12 +137,12 @@ function App() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full flex flex-col items-center justify-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                  <Rocket className="w-16 h-16 text-slate-600 mb-4" />
-                  <p className="text-xl text-slate-400 font-medium">Nenhum aplicativo encontrado.</p>
+                <div className="col-span-full flex flex-col items-center justify-center py-20 bg-white dark:bg-white/5 rounded-3xl border border-dashed border-slate-300 dark:border-white/10 shadow-sm dark:shadow-none">
+                  <Rocket className="w-16 h-16 text-slate-400 dark:text-slate-600 mb-4" />
+                  <p className="text-xl text-slate-500 dark:text-slate-400 font-medium">Nenhum aplicativo encontrado.</p>
                   <button 
                     onClick={() => setView('admin')}
-                    className="mt-4 text-brand-400 hover:text-brand-300 font-medium underline underline-offset-4"
+                    className="mt-4 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium underline underline-offset-4"
                   >
                     Adicionar seu primeiro app
                   </button>
@@ -133,15 +157,17 @@ function App() {
             projects={projects}
             onAddProject={handleAddProject}
             onDeleteProject={handleDeleteProject}
+            currentTheme={theme}
+            onToggleTheme={setTheme}
           />
         )}
 
       </main>
 
-      <footer className="relative z-10 border-t border-white/5 bg-slate-900/50 backdrop-blur-sm mt-20">
+      <footer className="relative z-10 border-t border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm mt-20 transition-colors">
         <div className="max-w-7xl mx-auto px-4 py-8 text-center">
           <p className="text-slate-500 text-sm">
-            © {new Date().getFullYear()} Aplicativos Stanismar. Desenvolvido com React, Tailwind e <span className="text-red-400">♥</span>
+            © {new Date().getFullYear()} Aplicativos Stanismar. Desenvolvido com React, Tailwind e <span className="text-red-500 dark:text-red-400">♥</span>
           </p>
         </div>
       </footer>

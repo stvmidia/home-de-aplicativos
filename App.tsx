@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { ProjectCard } from './components/ProjectCard';
 import { AdminPanel } from './components/AdminPanel';
-import { Project, ViewState, Theme } from './types';
+import { Project, ViewState, Theme, AppConfig } from './types';
 import { Rocket, Sparkles } from 'lucide-react';
 
 const STORAGE_KEY = 'stanismar-apps-data';
 const THEME_KEY = 'stanismar-theme';
+const CONFIG_KEY = 'stanismar-config';
 
 // Default initial data if storage is empty
 const INITIAL_DATA: Project[] = [
@@ -39,13 +40,20 @@ const INITIAL_DATA: Project[] = [
   }
 ];
 
+const DEFAULT_CONFIG: AppConfig = {
+  heroTitle: 'Hub de Inovação',
+  heroHighlight: 'Stanismar',
+  heroDescription: 'Explore uma coleção curada de aplicações inteligentes e experimentos criativos desenvolvidos com a tecnologia Google AI Studio.'
+};
+
 function App() {
   const [view, setView] = useState<ViewState>('home');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<Theme>('dark');
+  const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
 
-  // Load data and theme
+  // Load data, theme and config
   useEffect(() => {
     // Load Projects
     const savedProjects = localStorage.getItem(STORAGE_KEY);
@@ -58,6 +66,17 @@ function App() {
       }
     } else {
       setProjects(INITIAL_DATA);
+    }
+
+    // Load Config
+    const savedConfig = localStorage.getItem(CONFIG_KEY);
+    if (savedConfig) {
+      try {
+        setConfig(JSON.parse(savedConfig));
+      } catch (e) {
+        console.error("Failed to parse saved config", e);
+        setConfig(DEFAULT_CONFIG);
+      }
     }
 
     // Load Theme
@@ -79,6 +98,13 @@ function App() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
     }
   }, [projects, loading]);
+
+  // Save Config
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    }
+  }, [config, loading]);
 
   // Apply Theme
   useEffect(() => {
@@ -121,10 +147,10 @@ function App() {
                 <Sparkles className="w-3 h-3" /> Portfolio de IA
               </div>
               <h2 className="text-4xl md:text-6xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-                Hub de Inovação <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-500">Stanismar</span>
+                {config.heroTitle} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600 dark:from-brand-400 dark:to-accent-500">{config.heroHighlight}</span>
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                Explore uma coleção curada de aplicações inteligentes e experimentos criativos desenvolvidos com a tecnologia Google AI Studio.
+                {config.heroDescription}
               </p>
             </div>
 
@@ -159,6 +185,8 @@ function App() {
             onDeleteProject={handleDeleteProject}
             currentTheme={theme}
             onToggleTheme={setTheme}
+            config={config}
+            onUpdateConfig={setConfig}
           />
         )}
 

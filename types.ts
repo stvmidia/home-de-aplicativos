@@ -8,5 +8,11 @@ export interface Project {
   createdAt: number;
 }
 
+export interface AppConfig {
+  heroTitle: string;
+  heroHighlight: string;
+  heroDescription: string;
+}
+
 export type ViewState = 'home' | 'admin';
 export type Theme = 'light' | 'dark';

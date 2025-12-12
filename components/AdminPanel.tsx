@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Project, Theme } from '../types';
-import { Plus, Trash2, Save, X, Image as ImageIcon, Link as LinkIcon, Tag as TagIcon, Moon, Sun } from 'lucide-react';
+import { Project, Theme, AppConfig } from '../types';
+import { Plus, Trash2, Save, X, Image as ImageIcon, Link as LinkIcon, Tag as TagIcon, Moon, Sun, LayoutTemplate, Type } from 'lucide-react';
 
 interface AdminPanelProps {
   projects: Project[];
@@ -8,6 +8,8 @@ interface AdminPanelProps {
   onDeleteProject: (id: string) => void;
   currentTheme: Theme;
   onToggleTheme: (theme: Theme) => void;
+  config: AppConfig;
+  onUpdateConfig: (config: AppConfig) => void;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ 
@@ -15,7 +17,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onAddProject, 
   onDeleteProject,
   currentTheme,
-  onToggleTheme
+  onToggleTheme,
+  config,
+  onUpdateConfig
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,6 +50,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsAdding(false);
   };
 
+  const handleConfigChange = (key: keyof AppConfig, value: string) => {
+    onUpdateConfig({
+      ...config,
+      [key]: value
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       
@@ -53,37 +64,79 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Configurações</h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Gerencie a aparência e os aplicativos.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Gerencie a aparência e o conteúdo da página.</p>
         </div>
       </div>
 
-      {/* Theme Selection */}
-      <div className="glass-panel p-6 rounded-2xl border-l-4 border-brand-500">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Aparência</h3>
-        <div className="flex gap-4">
-          <button
-            onClick={() => onToggleTheme('light')}
-            className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
-              currentTheme === 'light'
-                ? 'border-brand-500 bg-brand-50 text-brand-700'
-                : 'border-slate-200 dark:border-slate-700 bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Sun className="w-6 h-6" />
-            <span className="font-medium">Modo Claro</span>
-          </button>
-          
-          <button
-            onClick={() => onToggleTheme('dark')}
-            className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
-              currentTheme === 'dark'
-                ? 'border-accent-500 bg-slate-800 text-accent-300'
-                : 'border-slate-200 dark:border-slate-700 bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Moon className="w-6 h-6" />
-            <span className="font-medium">Modo Escuro</span>
-          </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Theme Selection */}
+        <div className="glass-panel p-6 rounded-2xl border-l-4 border-brand-500">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <Sun className="w-5 h-5 text-brand-500" /> Tema
+          </h3>
+          <div className="flex gap-4">
+            <button
+              onClick={() => onToggleTheme('light')}
+              className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                currentTheme === 'light'
+                  ? 'border-brand-500 bg-brand-50 text-brand-700'
+                  : 'border-slate-200 dark:border-slate-700 bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Sun className="w-5 h-5" />
+              <span className="font-medium">Claro</span>
+            </button>
+            
+            <button
+              onClick={() => onToggleTheme('dark')}
+              className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                currentTheme === 'dark'
+                  ? 'border-accent-500 bg-slate-800 text-accent-300'
+                  : 'border-slate-200 dark:border-slate-700 bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Moon className="w-5 h-5" />
+              <span className="font-medium">Escuro</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Home Page Content Configuration */}
+        <div className="glass-panel p-6 rounded-2xl border-l-4 border-accent-500">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <LayoutTemplate className="w-5 h-5 text-accent-500" /> Cabeçalho (Hero)
+          </h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Título</label>
+                <input
+                  type="text"
+                  value={config.heroTitle}
+                  onChange={(e) => handleConfigChange('heroTitle', e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-brand-600 dark:text-brand-400">Destaque</label>
+                <input
+                  type="text"
+                  value={config.heroHighlight}
+                  onChange={(e) => handleConfigChange('heroHighlight', e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Descrição Principal</label>
+              <textarea
+                rows={2}
+                value={config.heroDescription}
+                onChange={(e) => handleConfigChange('heroDescription', e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:outline-none resize-none"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

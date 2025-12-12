@@ -50,7 +50,8 @@ function App() {
   const [view, setView] = useState<ViewState>('home');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<Theme>('dark');
+  // Change default state to 'light'
+  const [theme, setTheme] = useState<Theme>('light');
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
 
   // Load data, theme and config
@@ -83,9 +84,8 @@ function App() {
     const savedTheme = localStorage.getItem(THEME_KEY) as Theme;
     if (savedTheme) {
       setTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
     } else {
+      // Default to light if no saved preference
       setTheme('light');
     }
 

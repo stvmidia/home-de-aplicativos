@@ -37,6 +37,15 @@ const INITIAL_DATA: Project[] = [
     imageUrl: 'https://picsum.photos/id/60/800/600',
     tags: ['DevTools', 'Produtividade'],
     createdAt: Date.now() - 2000
+  },
+  {
+    id: '4',
+    title: '30 Redações da FGV',
+    description: 'Coletânea comentada de 30 redações nota máxima da banca FGV para preparação de concursos.',
+    url: 'https://github.com/stvmidia', 
+    imageUrl: 'https://picsum.photos/id/24/800/600',
+    tags: ['Educação', 'Redação', 'Concurso'],
+    createdAt: Date.now() - 3000
   }
 ];
 
